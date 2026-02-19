@@ -17,7 +17,7 @@ const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
 // TODO: set this after you publish your repo
-const GITHUB_REPO_URL = "https://github.com/yourname/api-failure-sim";
+const GITHUB_REPO_URL = "https://github.com/Engineernoob/api-failure-sim";
 
 export const metadata: Metadata = {
   title: "API Failure Simulator",
