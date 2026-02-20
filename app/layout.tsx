@@ -16,7 +16,6 @@ const geistMono = Geist_Mono({
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
-// TODO: set this after you publish your repo
 const GITHUB_REPO_URL = "https://github.com/Engineernoob/api-failure-sim";
 
 export const metadata: Metadata = {
@@ -52,7 +51,7 @@ export default function RootLayout({
         <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.06)_0,transparent_70%)]" />
 
         {/* Subtle grid texture */}
-        <div className="pointer-events-none fixed inset-0 -z-10 opacity-[0.18] bg-[linear-gradient(to_right,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-size-[48px_48px]" />
+        <div className="pointer-events-none fixed inset-0 -z-10 opacity-[0.08] bg-[linear-gradient(to_right,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-size-[48px_48px]" />
 
         <div className="mx-auto max-w-5xl px-6">
           {/* Top bar */}

@@ -49,6 +49,12 @@ function getErrorMessage(e: unknown): string {
   return "Unknown error";
 }
 
+const cardClass =
+  "rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5 shadow-sm transition hover:border-zinc-700 hover:bg-zinc-900/60";
+
+const fieldClass =
+  "rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2 text-zinc-100 outline-none focus:border-zinc-600";
+
 export default function Home() {
   const [mode, setMode] = useState<Mode>("slow");
   const [delayMs, setDelayMs] = useState(1500);
@@ -162,7 +168,6 @@ export default function Home() {
     if (typeof preset.limit === "number") setLimit(preset.limit);
     if (typeof preset.windowMs === "number") setWindowMs(preset.windowMs);
 
-    // If autoRun, build the URL based on preset immediately (don’t wait for state update)
     if (preset.autoRun) {
       const u = new URL(
         "/api/sim",
@@ -191,15 +196,15 @@ export default function Home() {
   };
 
   return (
-    <div className="grid gap-6 md:grid-cols-3">
+    <div className="grid gap-6 xl:grid-cols-3 lg:grid-cols-2">
       {/* Left: Controls */}
-      <section className="md:col-span-1 rounded-2xl border border-zinc-800 bg-zinc-900/30 p-5 shadow-sm">
+      <section className={`relative z-20 ${cardClass}`}>
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-medium">Controls</h2>
           <button
             onClick={() => run()}
             disabled={loading}
-            className="rounded-xl bg-zinc-100 px-3 py-2 text-xs text-zinc-900 font-medium hover:bg-white disabled:opacity-60"
+            className="rounded-xl bg-zinc-100 px-3 py-2 text-xs font-medium text-zinc-900 hover:bg-white disabled:opacity-60"
           >
             {loading ? "Running…" : "Send"}
           </button>
@@ -210,7 +215,7 @@ export default function Home() {
           <select
             value={mode}
             onChange={(e) => setMode(e.target.value as Mode)}
-            className="rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2 text-zinc-100"
+            className={`${fieldClass} relative z-30`}
           >
             {modes.map((m) => (
               <option key={m.value} value={m.value}>
@@ -221,20 +226,20 @@ export default function Home() {
           <p className="text-sm text-zinc-400">{selected.desc}</p>
 
           {(mode === "slow" || mode === "timeout") && (
-            <div className="mt-3 grid gap-2">
+            <div className="mt-2 grid gap-2">
               <label className="text-sm text-zinc-300">delayMs</label>
               <input
                 type="number"
                 min={0}
                 value={delayMs}
                 onChange={(e) => setDelayMs(Number(e.target.value))}
-                className="rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2 text-zinc-100"
+                className={fieldClass}
               />
             </div>
           )}
 
           {mode === "error500" && (
-            <div className="mt-3 grid gap-2">
+            <div className="mt-2 grid gap-2">
               <label className="text-sm text-zinc-300">status</label>
               <input
                 type="number"
@@ -242,13 +247,13 @@ export default function Home() {
                 max={599}
                 value={status}
                 onChange={(e) => setStatus(Number(e.target.value))}
-                className="rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2 text-zinc-100"
+                className={fieldClass}
               />
             </div>
           )}
 
           {mode === "ratelimit" && (
-            <div className="mt-3 grid gap-3">
+            <div className="mt-2 grid gap-3">
               <div className="grid gap-2">
                 <label className="text-sm text-zinc-300">limit</label>
                 <input
@@ -256,7 +261,7 @@ export default function Home() {
                   min={1}
                   value={limit}
                   onChange={(e) => setLimit(Number(e.target.value))}
-                  className="rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2 text-zinc-100"
+                  className={fieldClass}
                 />
               </div>
               <div className="grid gap-2">
@@ -266,7 +271,7 @@ export default function Home() {
                   min={1000}
                   value={windowMs}
                   onChange={(e) => setWindowMs(Number(e.target.value))}
-                  className="rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2 text-zinc-100"
+                  className={fieldClass}
                 />
               </div>
               <p className="text-xs text-zinc-400">
@@ -308,7 +313,7 @@ export default function Home() {
       </section>
 
       {/* Middle: Presets */}
-      <section className="md:col-span-1 rounded-2xl border border-zinc-800 bg-zinc-900/30 p-5 shadow-sm">
+      <section className={cardClass}>
         <h2 className="text-lg font-medium">Examples</h2>
         <p className="mt-2 text-sm text-zinc-400">
           One-click presets that mirror common production failures.
@@ -406,7 +411,7 @@ export default function Home() {
       </section>
 
       {/* Right: Response */}
-      <section className="md:col-span-1 rounded-2xl border border-zinc-800 bg-zinc-900/30 p-5 shadow-sm">
+      <section className={cardClass}>
         <h2 className="text-lg font-medium">Response</h2>
 
         {!result ? (
