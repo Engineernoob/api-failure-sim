@@ -57,6 +57,8 @@ const fieldClass =
 
 export default function Home() {
   const [mode, setMode] = useState<Mode>("slow");
+  const [modeOpen, setModeOpen] = useState(false);
+
   const [delayMs, setDelayMs] = useState(1500);
   const [status, setStatus] = useState(500);
   const [limit, setLimit] = useState(5);
@@ -73,12 +75,14 @@ export default function Home() {
     url: string;
   } | null>(null);
 
+  const selected = useMemo(() => modes.find((m) => m.value === mode)!, [mode]);
+
   const url = useMemo(() => {
     const u = new URL(
       "/api/sim",
       typeof window !== "undefined"
         ? window.location.origin
-        : "http://localhost:3000",
+        : "http://localhost:3000"
     );
 
     u.searchParams.set("mode", mode);
@@ -104,8 +108,6 @@ export default function Home() {
     return `curl -i -H "x-request-id: ${rid}" "http://localhost:3000${url}"`;
   }, [url, result?.requestId]);
 
-  const selected = useMemo(() => modes.find((m) => m.value === mode)!, [mode]);
-
   const copy = async (text: string) => {
     await navigator.clipboard.writeText(text);
   };
@@ -116,7 +118,6 @@ export default function Home() {
 
     const requestId = makeReqId();
     const started = performance.now();
-
     const finalUrl = overrideUrl ?? url;
 
     try {
@@ -162,6 +163,7 @@ export default function Home() {
     autoRun?: boolean;
   }) => {
     setMode(preset.mode);
+    setModeOpen(false);
 
     if (typeof preset.delayMs === "number") setDelayMs(preset.delayMs);
     if (typeof preset.status === "number") setStatus(preset.status);
@@ -173,7 +175,7 @@ export default function Home() {
         "/api/sim",
         typeof window !== "undefined"
           ? window.location.origin
-          : "http://localhost:3000",
+          : "http://localhost:3000"
       );
       u.searchParams.set("mode", preset.mode);
 
@@ -198,7 +200,7 @@ export default function Home() {
   return (
     <div className="grid gap-6 xl:grid-cols-3 lg:grid-cols-2">
       {/* Left: Controls */}
-      <section className={`relative z-20 ${cardClass}`}>
+      <section className={cardClass}>
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-medium">Controls</h2>
           <button
@@ -212,17 +214,41 @@ export default function Home() {
 
         <div className="mt-4 grid gap-3">
           <label className="text-sm text-zinc-300">Mode</label>
-          <select
-            value={mode}
-            onChange={(e) => setMode(e.target.value as Mode)}
-            className={`${fieldClass} relative z-30`}
+
+          {/* Custom in-flow dropdown (no overlay) */}
+          <button
+            type="button"
+            onClick={() => setModeOpen((v) => !v)}
+            className={`${fieldClass} flex w-full items-center justify-between`}
+            aria-expanded={modeOpen}
           >
-            {modes.map((m) => (
-              <option key={m.value} value={m.value}>
-                {m.label}
-              </option>
-            ))}
-          </select>
+            <span>{selected.label}</span>
+            <span className="text-zinc-400">▾</span>
+          </button>
+
+          {modeOpen && (
+            <div className="mt-2 rounded-xl border border-zinc-800 bg-zinc-950 p-2">
+              <div className="grid gap-1">
+                {modes.map((m) => (
+                  <button
+                    key={m.value}
+                    type="button"
+                    onClick={() => {
+                      setMode(m.value);
+                      setModeOpen(false);
+                    }}
+                    className={`rounded-lg px-3 py-2 text-left text-sm hover:bg-zinc-900/60 ${
+                      m.value === mode ? "bg-zinc-900/70" : ""
+                    }`}
+                  >
+                    <div className="font-medium">{m.label}</div>
+                    <div className="text-xs text-zinc-400">{m.desc}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <p className="text-sm text-zinc-400">{selected.desc}</p>
 
           {(mode === "slow" || mode === "timeout") && (
@@ -290,9 +316,7 @@ export default function Home() {
                 Copy
               </button>
             </div>
-            <pre className="mt-2 overflow-auto text-xs text-zinc-200">
-              {url}
-            </pre>
+            <pre className="mt-2 overflow-auto text-xs text-zinc-200">{url}</pre>
           </div>
 
           <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-3">
@@ -305,9 +329,7 @@ export default function Home() {
                 Copy
               </button>
             </div>
-            <pre className="mt-2 overflow-auto text-xs text-zinc-200">
-              {curl}
-            </pre>
+            <pre className="mt-2 overflow-auto text-xs text-zinc-200">{curl}</pre>
           </div>
         </div>
       </section>
